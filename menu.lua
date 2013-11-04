@@ -102,12 +102,12 @@ function scene:createScene( event )
   storeSettings = loadsave.loadTable("store.json")
   if (loadsave.loadTable("store.json") == nil) then
     storeSettings = {}
-    storeSettings.sinePaid = false
+    storeSettings.speedPaid = false
     storeSettings.trigPaid = false
     storeSettings.boltPaid = false
     loadsave.saveTable(storeSettings, "store.json")
   end
-    -- storeSettings.sinePaid = false
+    -- storeSettings.speedPaid = false
     -- storeSettings.trigPaid = false
     -- storeSettings.boltPaid = false
     -- loadsave.saveTable(storeSettings, "store.json")
@@ -128,7 +128,7 @@ function scene:createScene( event )
 		
 	--Create Button Widgets
 
-speedButt = widget.newButton
+	sineButt = widget.newButton
 	{
 		left = 0,
 		top = 0,
@@ -136,14 +136,14 @@ speedButt = widget.newButton
 		height = 50,
     --font = "BadBlocksTT",
     fontSize = 16,
-		id = "speedButt",
-		label = "SPEEDS & FEEDS",
+		id = "sineButt",
+		label = "SINE BAR",
 		onRelease = sceneSelect,		
 		}
-	speedButt.num = 4
-	screenGroup:insert(speedButt)
-	speedButt.x = backEdgeX + 430
-	speedButt.y = backEdgeY + 60
+	sineButt.num = 3
+	screenGroup:insert(sineButt)
+	sineButt.x = backEdgeX + 430
+	sineButt.y = backEdgeY + 60
   
   rightButt = widget.newButton
 	{
@@ -178,8 +178,8 @@ speedButt = widget.newButton
 	screenGroup:insert(obliqueButt)
 	obliqueButt.x = backEdgeX + 430
 	obliqueButt.y = backEdgeY + 180
-	
-	 sineButt = widget.newButton
+
+	speedButt = widget.newButton
 	{
 		left = 0,
 		top = 0,
@@ -187,14 +187,14 @@ speedButt = widget.newButton
 		height = 50,
     --font = "BadBlocksTT",
     fontSize = 16,
-		id = "sineButt",
-		label = "SINE BAR",
+		id = "speedButt",
+		label = "SPEEDS & FEEDS",
 		onRelease = sceneSelect,		
 		}
-	sineButt.num = 3
-	screenGroup:insert(sineButt)
-	sineButt.x = backEdgeX + 430
-	sineButt.y = backEdgeY + 240
+	speedButt.num = 4
+	screenGroup:insert(speedButt)
+	speedButt.x = backEdgeX + 430
+	speedButt.y = backEdgeY + 240
 	
 	boltButt = widget.newButton
 	{
@@ -242,12 +242,12 @@ speedButt = widget.newButton
 		obliqueButt:setEnabled(false)
 	end
 
-	if storeSettings.sinePaid then
-		sineButt.alpha = 1
-		sineButt:setEnabled(true)
+	if storeSettings.speedPaid then
+		speedButt.alpha = 1
+		speedButt:setEnabled(true)
 	else
-		sineButt.alpha = 0.50
-		sineButt:setEnabled(false)
+		speedButt.alpha = 0.50
+		speedButt:setEnabled(false)
 	end
 
 	if storeSettings.boltPaid then
@@ -258,7 +258,7 @@ speedButt = widget.newButton
 		boltButt:setEnabled(false)
 	end
 
-	if storeSettings.sinePaid and storeSettings.trigPaid and storeSettings.boltPaid then
+	if storeSettings.speedPaid and storeSettings.trigPaid and storeSettings.boltPaid then
 		storeButt.alpha = 0
 	end
 

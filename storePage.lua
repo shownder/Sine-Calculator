@@ -7,12 +7,12 @@ local loadsave = require ("loadsave")
 local back
 
 local storeSettings, restoring
-local sineButt, speedButt, boltButt, restoreButt, backButt
-local sineBuy, speedBuy, boltBuy
-local sineText, speedText, boltText
+local sineButt, speedButt, boltButt, trigButt, restoreButt, backButt
+local sineBuy, speedBuy, boltBuy, trigBuy
+local sineText, speedText, boltText, trigText
 local sineDesc, speedDesc, boltDesc
 local backEdgeX, backEdgeY, optionsBack
-local sineGroup, speedGroup, boltGroup
+local sineGroup, speedGroup, boltGroup, trigGroup
 local whichOne, sineSold, speedSold, boltSold
 
 local function onKeyEvent( event )
@@ -37,12 +37,12 @@ local function transactionCallback( event )
    if tstate == "purchased" then
       print("Transaction succuessful!")
       if whichOne[1] == product then
-        storeSettings.sinePaid = true
-        sineButt.alpha = 0.50
-        sineButt:setEnabled(false)
-        sineBuy.alpha = 0
-      elseif whichOne[2] == product then
         storeSettings.trigPaid = true
+        trigButt.alpha = 0.50
+        trigButt:setEnabled(false)
+        trigBuy.alpha = 0
+      elseif whichOne[2] == product then
+        storeSettings.speedPaid = true
         speedButt.alpha = 0.50
         speedButt:setEnabled(false)
         speedBuy.alpha = 0
@@ -58,12 +58,12 @@ local function transactionCallback( event )
    elseif  tstate == "restored" then
       print("Transaction restored (from previous session)")
       if whichOne[1] == product then
-        storeSettings.sinePaid = true
-        sineButt.alpha = 0.50
-        sineButt:setEnabled(false)
-        sineBuy.alpha = 0
-      elseif whichOne[2] == product then
         storeSettings.trigPaid = true
+        trigButt.alpha = 0.50
+        trigButt:setEnabled(false)
+        trigBuy.alpha = 0
+      elseif whichOne[2] == product then
+        storeSettings.speedPaid = true
         speedButt.alpha = 0.50
         speedButt:setEnabled(false)
         speedBuy.alpha = 0
@@ -78,9 +78,9 @@ local function transactionCallback( event )
    elseif tstate == "refunded" then
       print("User requested a refund -- locking app back")
       if whichOne[1] == product then
-        storeSettings.sinePaid = false
-      elseif whichOne[2] == product then
         storeSettings.trigPaid = false
+      elseif whichOne[2] == product then
+        storeSettings.speedPaid = false
       elseif whichOne[3] == product then
         storeSettings.boltPaid = false
       end
@@ -114,16 +114,16 @@ local function purchase( event )
   if event.phase == "ended" then
     
     if event.target.num == 1 then
-      print("Purchase Sine")
-      store.purchase({"com.speedfeed.iap.sine"})
+      print("Purchase Trig")
+      store.purchase({"com.sine.iap.trig"})
       --store.purchase({"android.test.purchased"})
     elseif event.target.num == 2 then
       print("Purchase Speed")
-      store.purchase({"com.speedfeed.iap.trig"})
+      store.purchase({"com.sine.iap.speed"})
       --store.purchase({"android.test.canceled"})
     elseif event.target.num == 3 then
       print("Purchase Bolt")
-      store.purchase({"com.speedfeed.iap.bolt"})
+      store.purchase({"com.sine.iap.bolt"})
       --store.purchase({"android.test.item_unavailable"})
     end
     
@@ -144,13 +144,13 @@ local function descSelect ( event )
    if "ended" == phase then
 
     if event.target.num == 1 then
-        sineGroup.alpha = 1
+        trigGroup.alpha = 1
         speedGroup.alpha = 0
         boltGroup.alpha = 0
 
-        sineButt.alpha = 0
-        sineBuy.alpha = 1
-        if not storeSettings.trigPaid then 
+        trigButt.alpha = 0
+        trigBuy.alpha = 1
+        if not storeSettings.speedPaid then 
           speedButt.alpha = 1
         end
         if not storeSettings.boltPaid then
@@ -158,29 +158,29 @@ local function descSelect ( event )
         end
     elseif event.target.num == 2 then
         speedGroup.alpha = 1
-        sineGroup.alpha = 0
+        trigGroup.alpha = 0
         boltGroup.alpha = 0
 
         speedButt.alpha = 0
         speedBuy.alpha = 1
-        if not storeSettings.sinePaid then 
-          sineButt.alpha = 1
+        if not storeSettings.trigPaid then 
+          trigButt.alpha = 1
         end
         if not storeSettings.boltPaid then
           boltButt.alpha = 1
         end
     elseif event.target.num == 3 then
         boltGroup.alpha = 1
-        sineGroup.alpha = 0
+        trigGroup.alpha = 0
         speedGroup.alpha = 0
         
         boltButt.alpha = 0
         boltBuy.alpha = 1
         if not storeSettings.trigPaid then 
-          speedButt.alpha = 1
+          trigButt.alpha = 1
         end
-        if not storeSettings.sinePaid then
-          sineButt.alpha = 1
+        if not storeSettings.speedPaid then
+          speedButt.alpha = 1
         end
     end
 
@@ -202,16 +202,17 @@ function scene:createScene( event )
   end
 
   whichOne = {}
-  whichOne[1] = "com.speedfeed.iap.sine"
+  whichOne[1] = "com.sine.iap.trig"
   --whichOne[1] = "android.test.purchased"
-  whichOne[2] = "com.speedfeed.iap.trig"
+  whichOne[2] = "com.sine.iap.speed"
   --whichOne[2] = "android.test.canceled"
-  whichOne[3] = "com.speedfeed.iap.bolt"
+  whichOne[3] = "com.sine.iap.bolt"
   --whichOne[3] = "android.test.item_unavailable"
 
   sineGroup = display.newGroup ( )
   speedGroup = display.newGroup ( )
   boltGroup = display.newGroup ( )
+  trigGroup = display.newGroup ( )
 
 	back = 	display.newImageRect( screenGroup, "backgrounds/background.png", 570, 360 )
 	back.x = display.contentCenterX
@@ -232,46 +233,46 @@ function scene:createScene( event )
   --title:setEmbossColor({highlight = {r=0, g=0, b=0, a=200}, shadow = {r=0,g=0,b=0, a=0}})
   title.x = display.actualContentHeight-60
 
-  sineButt = widget.newButton
-  {
-    id = "sineButt",
-    width = 125,
-    label = "Sine Bar",
-    labelColor = { default = {255, 255, 255}, over = {39, 102, 186, 200}},
-    font = "BerlinSansFB-Reg",
-    fontSize = 20,
-    defaultFile = "Images/buttonOver.png",
-    overFile = "Images/button.png",
-    onRelease = descSelect,    
-    }
-  sineButt.num = 1
-  screenGroup:insert(sineButt)
-  sineButt.x = display.actualContentHeight-85
-  sineButt.y = 110
+  -- sineButt = widget.newButton
+  -- {
+  --   id = "sineButt",
+  --   width = 125,
+  --   label = "Sine Bar",
+  --   labelColor = { default = {255, 255, 255}, over = {39, 102, 186, 200}},
+  --   font = "BerlinSansFB-Reg",
+  --   fontSize = 20,
+  --   defaultFile = "Images/buttonOver.png",
+  --   overFile = "Images/button.png",
+  --   onRelease = descSelect,    
+  --   }
+  -- sineButt.num = 1
+  -- screenGroup:insert(sineButt)
+  -- sineButt.x = display.actualContentHeight-85
+  -- sineButt.y = 110
 
-  sineBuy = widget.newButton
-  {
-    id = "sineBuy",
-    width = 125,
-    label = "Buy",
-    labelColor = { default = {255, 255, 255}, over = {19, 124, 21}},
-    font = "BerlinSansFB-Reg",
-    fontSize = 16,
-    defaultFile = "Images/buyOver.png",
-    overFile = "Images/buy.png",
-    onRelease = purchase,    
-    }
-  sineBuy.num = 1
-  sineGroup:insert(sineBuy)
-  sineBuy.x = display.actualContentHeight-85
-  sineBuy.y = 110
-  sineBuy.alpha = 0
---Speed is Trig in this app
+  -- sineBuy = widget.newButton
+  -- {
+  --   id = "sineBuy",
+  --   width = 125,
+  --   label = "Buy",
+  --   labelColor = { default = {255, 255, 255}, over = {19, 124, 21}},
+  --   font = "BerlinSansFB-Reg",
+  --   fontSize = 16,
+  --   defaultFile = "Images/buyOver.png",
+  --   overFile = "Images/buy.png",
+  --   onRelease = purchase,    
+  --   }
+  -- sineBuy.num = 1
+  -- sineGroup:insert(sineBuy)
+  -- sineBuy.x = display.actualContentHeight-85
+  -- sineBuy.y = 110
+  -- sineBuy.alpha = 0
+
   speedButt = widget.newButton
   {
     id = "speedButt",
     width = 125,
-    label = "Trigonometry",
+    label = "Speeds & Feeds",
     labelColor = { default = {255, 255, 255}, over = {39, 102, 186, 200}},
     font = "BerlinSansFB-Reg",
     fontSize = 16,
@@ -337,6 +338,41 @@ function scene:createScene( event )
   boltBuy.y = 230
   boltBuy.alpha = 0
 
+  trigButt = widget.newButton
+  {
+    id = "trigButt",
+    width = 125,
+    label = "Trigonometry",
+    labelColor = { default = {255, 255, 255}, over = {39, 102, 186, 200}},
+    font = "BerlinSansFB-Reg",
+    fontSize = 16,
+    defaultFile = "Images/buttonOver.png",
+    overFile = "Images/button.png",
+    onRelease = descSelect,    
+    }
+  trigButt.num = 1
+  screenGroup:insert(trigButt)
+  trigButt.x = display.actualContentHeight-85
+  trigButt.y = 110
+
+  trigBuy = widget.newButton
+  {
+    id = "trigBuy",
+    width = 125,
+    label = "Buy",
+    labelColor = { default = {255, 255, 255}, over = {19, 124, 21}},
+    font = "BerlinSansFB-Reg",
+    fontSize = 16,
+    defaultFile = "Images/buyOver.png",
+    overFile = "Images/buy.png",
+    onRelease = purchase,    
+    }
+  trigBuy.num = 1
+  trigGroup:insert(trigBuy)
+  trigBuy.x = display.actualContentHeight-85
+  trigBuy.y = 110
+  trigBuy.alpha = 0
+
   restoreButt = widget.newButton
   {
     id = "restoreButt",
@@ -349,7 +385,7 @@ function scene:createScene( event )
     overFile = "Images/restoreButt.png",
     onRelease = restorePurchases,    
     }
-  restoreButt.num = 3
+  restoreButt.num = 1
   restoreButt.pressed = false
   screenGroup:insert(restoreButt)
   restoreButt.x = display.actualContentHeight-85
@@ -374,15 +410,13 @@ function scene:createScene( event )
 
   sineGroup.alpha = 0
 
---speed is replaced by Trig in this app
-
-  speedDesc = display.newImageRect( speedGroup, "backgrounds/trig.png", 285, 180 )
+  speedDesc = display.newImageRect( speedGroup, "backgrounds/speedDesc.png", 285, 180 )
   speedDesc.x = 200
   speedDesc.y = 110
 
   speedText = display.newText( options )
   speedGroup:insert(speedText)
-  speedText.text = "Solve Right Angle and Oblique Triangle problems. Easily switch between inch and metric, and convert between degrees-decimal and degrees, minutes and seconds. $0.99 USD"
+  speedText.text = "Calculate cutting speeds & feeds for drills, milling cutters, and lathe workpieces. Calculate between RPM and feet or meters per minute, and between feed per rev and feed per minute. $0.99 USD"
   speedText.x = 200
   speedText.y = 245
 
@@ -400,18 +434,31 @@ function scene:createScene( event )
 
   boltGroup.alpha = 0
 
+  trigDesc = display.newImageRect( trigGroup, "backgrounds/trig.png", 285, 180 )
+  trigDesc.x = 200
+  trigDesc.y = 115
+
+  trigText = display.newText( options )
+  trigGroup:insert(trigText)
+  trigText.text = "Solve Right Angle and Oblique Triangle problems. Easily switch between inch and metric, and convert between degrees-decimal and degrees, minutes and seconds. $0.99 USD"
+  trigText.x = 200
+  trigText.y = 245
+
+  trigGroup.alpha = 0
+
   screenGroup:insert(sineGroup)
   screenGroup:insert(speedGroup)
   screenGroup:insert(boltGroup)
+  screenGroup:insert(trigGroup)
 
-  if storeSettings.sinePaid then
+  if storeSettings.speedPaid then
     sineButt.alpha = 0.50
     sineButt:setEnabled(false)
   end
 
   if storeSettings.trigPaid then
-    speedButt.alpha = 0.50
-    speedButt:setEnabled(false)
+    trigButt.alpha = 0.50
+    trigButt:setEnabled(false)
   end
 
   if storeSettings.boltPaid then
@@ -419,7 +466,7 @@ function scene:createScene( event )
     boltButt:setEnabled(false)
   end
 
-  if not storeSettings.sinePaid and not storeSettings.trigPaid and not storeSettings.boltPaid then
+  if not storeSettings.speedPaid and not storeSettings.trigPaid and not storeSettings.boltPaid then
     restoreButt.alpha = 1
   else
     restoreButt.alpha = 0
