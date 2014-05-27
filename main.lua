@@ -64,8 +64,3 @@ print(system.getInfo("model") .. " " .. system.getInfo("platformVersion"))
 if device.isApple then
   composer.gotoScene( "menu")
 end
-
-
-
-
-
