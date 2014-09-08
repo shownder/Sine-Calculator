@@ -1,5 +1,18 @@
 settings =
 {
+  plugins =
+  {
+    ["plugin.amazon.iap"] =
+      {
+          -- required
+          publisherId = "com.amazon",
+      },
+    ["CoronaProvider.analytics.flurry"] =
+      {
+          -- required
+          publisherId = "com.coronalabs",
+      },
+  },
 	orientation =
 	{
 		default = "landscapeRight",
@@ -10,7 +23,7 @@ settings =
     {
 		plist =
       {
-        CFBundleDisplayName = "Sine Bar Calculator",
+        CFBundleDisplayName = "Sine Bar Calc",
         UIAppFonts = 
           {
             "Rock Salt.ttf",
